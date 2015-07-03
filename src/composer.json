@@ -1,4 +1,9 @@
 {
+	"autoload": {
+		"psr-0": {
+			"MyApp": "app"
+		}		
+	},
     "require": {
         "cboden/ratchet": "^0.3.3"
     }
