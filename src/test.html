@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+<meta charset="UTF-8" />
+<title>reminder</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+</head>
+<body>
+<button id="mybtn">点击</button>
+</body>
+
+<script type="text/javascript">
+/**
+* 请求授权并返回权限状态
+
+**/
+function request_notification_permission() {
+/**
+返回值
+    default
+    granted
+    denied
+当不支持桌面通知时返回false
+*/
+	if(!check_notification_support()){
+		return false;
+	}
+	if(Notification && Notification.permission !== "granted"){
+			Notification.requestPermission(function(status){
+				if(Notification.permission !== status){
+					Notification.permission = status;
+				}
+			});
+	}
+
+	return Notification.permission;
+
+}
+/**
+  浏览器是否支持桌面通知
+**/
+function check_notification_support(){
+
+	if(window.Notification){
+		return true;
+	}else{
+		return false;
+	}
+
+}
+/**
+  显示通知信息
+**/
+function show_notification(){
+	// 这是通知内容
+	var t = new Date().toLocaleString();
+	var options={
+		dir: "ltr",
+		lang: "utf-8",
+		icon: "image/cat.jpg",
+		body: "你好呀，欢迎留言交流呀"
+	};
+	var n = new Notification("新消息: "+ t, options);    
+	n.onshow = function(){
+		console.log("You got me!");
+	};
+	n.onclick = function() {
+		alert("You clicked me!");
+		window.location = "/";
+	};
+	n.onclose = function(){
+		console.log("notification closed!");
+	};        
+	n.onerror = function() {
+		console.log("An error accured");
+	}
+
+}
+$(document).ready(
+	function($){
+
+		var notification_status = request_notification_permission();
+		if('granted' == notification_status) { // 如果之前已经同意直接来上一条提醒
+			show_notification();
+		}
+		//点击提醒
+		$('#mybtn').click(function(){
+
+			var notification_status = request_notification_permission();
+			if(notification_status === false){
+				alert("sorry，你的浏览器不支持桌面通知");
+			}else if(notification_status === 'denied'){
+				alert("你拒绝了桌面通知，无法使用，请在浏览器重新设置");
+			}else{
+				show_notification();	            
+				
+			}
+
+		});
+	}
+);	
+</script>
+
+</html>
